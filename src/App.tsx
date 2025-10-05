@@ -32,7 +32,7 @@ function globalSymbolWeightsFromReels(pool = REEL_WEIGHTS_BY_REEL) {
   const w: Record<PaySym, number> = { "🍒":0,"🍋":0,"🍇":0,"🍊":0,"🥝":0,"🥥":0,"🔔":0,"⭐":0,"💎":0,"🍀":0 };
   for (const col of pool) {
     for (const {sym, weight} of col) {
-      if (sym === "🎟️" || sym === "❓") continue;
+      if (sym === "BonusSym" || sym === "❓") continue;
       w[sym as PaySym] += weight;
     }
   }
@@ -44,7 +44,7 @@ const ROWS = 4;
 const COLS = 6;
 
 type PaySym = "🍒"|"🍋"|"🍇"|"🍊"|"🥝"|"🥥"|"🔔"|"⭐"|"💎"|"🍀";
-type Sym = PaySym | "🎟️" | "❓"; // <<— INGA WILDS
+type Sym = PaySym | "BonusSym" | "❓"; // <<— INGA WILDS
 
 // —— Sprites (just nu bara Cherry ersatt av symbol10.png) ——
 const SPRITE_MAP: Partial<Record<Sym, string>> = {
@@ -59,17 +59,18 @@ const SPRITE_MAP: Partial<Record<Sym, string>> = {
   "💎": "/assets/premium5.png",
   "🍀": "/assets/premium7.png",
   "❓": "/assets/Mystery.png",
+  "BonusSym": "/assets/bonusSymb.png",
 };
 
-function SymbolSprite({ sym }: { sym: Sym }) {
+function SymbolSprite({ sym, size = 56 }: { sym: Sym; size?: number }) {
   const src = SPRITE_MAP[sym];
-  const isSpecial = sym === "🎟️" || sym === "❓";
+  const isSpecial = sym === "BonusSym" || sym === "❓";
 
   if (!src) {
     return (
       <span
         style={{
-          fontSize: isSpecial ? "2.2rem" : "1.7rem",
+          fontSize: isSpecial ? "2.2rem" : `${Math.round(size * 0.9)}px`,
           lineHeight: 1,
         }}
       >
@@ -83,8 +84,8 @@ function SymbolSprite({ sym }: { sym: Sym }) {
       src={src}
       alt={sym}
       style={{
-        width: isSpecial ? "100%" : 56,
-        height: isSpecial ? "100%" : 56,
+        width: isSpecial ? "100%" : size,
+        height: isSpecial ? "100%" : size,
         objectFit: "contain",
         imageRendering: "auto",
         pointerEvents: "none",
@@ -101,38 +102,38 @@ const REEL_WEIGHTS_BY_REEL: Array<Array<{ sym: Sym; weight: number }>> = [
   [
     { sym: "🍒", weight: 18 }, { sym: "🍋", weight: 18 }, { sym: "🍇", weight: 16 }, { sym: "🍊", weight: 16 }, { sym: "🥝", weight: 14 },
     { sym: "🥥", weight: 14 }, { sym: "🔔", weight: 10 }, { sym: "⭐",  weight: 8  }, { sym: "💎", weight: 6  }, { sym: "🍀", weight: 6  },
-    { sym: "🎟️", weight: 1  }, { sym: "❓", weight: 2  },
+  { sym: "BonusSym", weight: 1  }, { sym: "❓", weight: 2  },
   ],
   [
     { sym: "🍒", weight: 18 }, { sym: "🍋", weight: 18 }, { sym: "🍇", weight: 16 }, { sym: "🍊", weight: 16 }, { sym: "🥝", weight: 14 },
     { sym: "🥥", weight: 14 }, { sym: "🔔", weight: 10 }, { sym: "⭐",  weight: 8  }, { sym: "💎", weight: 6  }, { sym: "🍀", weight: 6  },
-    { sym: "🎟️", weight: 1  }, { sym: "❓", weight: 2  },
+  { sym: "BonusSym", weight: 1  }, { sym: "❓", weight: 2  },
   ],
   [
     { sym: "🍒", weight: 18 }, { sym: "🍋", weight: 18 }, { sym: "🍇", weight: 16 }, { sym: "🍊", weight: 16 }, { sym: "🥝", weight: 14 },
     { sym: "🥥", weight: 14 }, { sym: "🔔", weight: 10 }, { sym: "⭐",  weight: 8  }, { sym: "💎", weight: 6  }, { sym: "🍀", weight: 6  },
-    { sym: "🎟️", weight: 1  }, { sym: "❓", weight: 2  },
+  { sym: "BonusSym", weight: 1  }, { sym: "❓", weight: 2  },
   ],
   [
     { sym: "🍒", weight: 18 }, { sym: "🍋", weight: 18 }, { sym: "🍇", weight: 16 }, { sym: "🍊", weight: 16 }, { sym: "🥝", weight: 14 },
     { sym: "🥥", weight: 14 }, { sym: "🔔", weight: 10 }, { sym: "⭐",  weight: 8  }, { sym: "💎", weight: 6  }, { sym: "🍀", weight: 6  },
-    { sym: "🎟️", weight: 1  }, { sym: "❓", weight: 2  },
+  { sym: "BonusSym", weight: 1  }, { sym: "❓", weight: 2  },
   ],
   [
     { sym: "🍒", weight: 18 }, { sym: "🍋", weight: 18 }, { sym: "🍇", weight: 16 }, { sym: "🍊", weight: 16 }, { sym: "🥝", weight: 14 },
     { sym: "🥥", weight: 14 }, { sym: "🔔", weight: 10 }, { sym: "⭐",  weight: 8  }, { sym: "💎", weight: 6  }, { sym: "🍀", weight: 6  },
-    { sym: "🎟️", weight: 1  }, { sym: "❓", weight: 2  },
+  { sym: "BonusSym", weight: 1  }, { sym: "❓", weight: 2  },
   ],
   [
     { sym: "🍒", weight: 18 }, { sym: "🍋", weight: 18 }, { sym: "🍇", weight: 16 }, { sym: "🍊", weight: 16 }, { sym: "🥝", weight: 14 },
     { sym: "🥥", weight: 14 }, { sym: "🔔", weight: 10 }, { sym: "⭐",  weight: 8  }, { sym: "💎", weight: 6  }, { sym: "🍀", weight: 6  },
-    { sym: "🎟️", weight: 1  }, { sym: "❓", weight: 2  },
+  { sym: "BonusSym", weight: 1  }, { sym: "❓", weight: 2  },
   ],
 ];
 
 // Bonus-pool utan ❓ och 🎟️ (stabilitet)
 const STRIP_POOL_BONUS = REEL_WEIGHTS_BY_REEL.map(col =>
-  col.filter(x => x.sym !== "❓" && x.sym !== "🎟️")
+  col.filter(x => x.sym !== "❓" && x.sym !== "BonusSym")
 );
 
 /** —— PAYTABLE —— */
@@ -149,7 +150,7 @@ const PAY: Record<PaySym, Partial<Record<3|4|5|6, number>>> = {
   "🍀": {3:0.90, 4:2.20, 5:5.00, 6:10.00},
 };
 const PAY_SYMBOLS = Object.keys(PAY) as PaySym[];
-const isScatter = (s: Sym) => s === "🎟️";
+const isScatter = (s: Sym) => s === "BonusSym";
 const isMystery = (s: Sym) => s === "❓";
 const key = (r:number,c:number)=>`${r},${c}`;
 
@@ -187,7 +188,7 @@ const BASE_STRIP_POOL = REEL_WEIGHTS_BY_REEL.map(col =>
 const BASE_MYSTERY_BURST_CHANCE = 0.16;
 const BASE_MYSTERY_BURST_MIN = 6;
 const BASE_MYSTERY_BURST_MAX = 14;
-const BASE_SECOND_BURST_CHANCE = 0.04;
+
 
 // Startar kedjor oftare i kolumn 0, ibland i 1
 const BASE_FORCE_COL0_IN_BURST_PROB = 0.60;
@@ -211,6 +212,8 @@ const BASE_PREV2_REEL_SAME_ROW_BOOST = 1.4;  // mild
 // Lätt global bias mot symboler som redan syns i reel 0 och 1 (tidiga hjul)
 const BASE_REEL1_COUNT_ALIGNMENT = 0.15;
 const BASE_REEL2_COUNT_ALIGNMENT = 0.15;
+// --- WIN SCREEN threshold (gäller både base & bonus) ---
+const BIG_WIN_MULT = 20; // visa Win Screen om vinst >= 20x bet
 
 function spinGrid(rng: () => number, pool = REEL_WEIGHTS_BY_REEL): Sym[][] {
   return Array.from({ length: ROWS }, () =>
@@ -331,6 +334,15 @@ const CELL_H = 78;
 const CELL_GAP = 6;
 const COL_GAP = 12;
 
+function rowSetForCol(preBurstSet: Set<string>, col: number): Set<number> {
+  const s = new Set<number>();
+  preBurstSet.forEach(k => {
+    const [r, c] = k.split(",").map(Number);
+    if (c === col) s.add(r);
+  });
+  return s;
+}
+
 type ReelProps = {
   col: number;
   symbols: Sym[];
@@ -338,9 +350,11 @@ type ReelProps = {
   transitionMs: number;
   hl: Set<string>;
   pulse: Set<string>;
+  preBurstRows?: Set<number>;  // NEW
+  dim?: boolean;               // NEW
 };
 
-function Reel({ col, symbols, offset, transitionMs, hl, pulse }: ReelProps) {
+function Reel({ col, symbols, offset, transitionMs, hl, pulse, preBurstRows, dim }: ReelProps) {
   const visibleH = ROWS * CELL_H + (ROWS - 1) * CELL_GAP;
 
   // Startindex för de sista (synliga) ROWS cellerna i strippen
@@ -379,6 +393,8 @@ function Reel({ col, symbols, offset, transitionMs, hl, pulse }: ReelProps) {
           const highlighted = k ? hl.has(k) : false;
           const pulsing = k ? pulse.has(k) : false;
 
+          const isMysteryCell = sym === "❓";
+          const isBonusCell = sym === "BonusSym";
           return (
             <div
               key={i}
@@ -392,11 +408,32 @@ function Reel({ col, symbols, offset, transitionMs, hl, pulse }: ReelProps) {
                 justifyContent: "center",
                 fontSize: "1.7rem",
                 lineHeight: 1,
-                background: highlighted ? "rgba(240,180,0,0.10)" : "transparent",
-                border: highlighted ? "2px solid rgba(240,180,0,0.65)" : "1px solid rgba(255,255,255,0.12)",
-                boxShadow: highlighted
-                  ? "0 0 0 3px rgba(240,180,0,0.20)"
-                  : "0 2px 10px rgba(0,0,0,0.25)",
+                // ⬇️ Darken the cell rectangles so the PNG behind reads through
+                background: isBonusCell
+                  ? "rgba(28,6,6,0.9)"
+                  : highlighted
+                    ? "rgba(90,0,120,0.35)"      // darker purple background when highlighted
+                    : isMysteryCell
+                      ? "rgba(15,20,28,0.9)"
+                      : "rgba(10,10,14,0.65)",   // slightly darker overall for contrast
+                border: isBonusCell
+                  ? "2px solid rgba(255,70,70,0.95)"
+                  : highlighted
+                    ? "2px solid rgba(200,120,255,0.9)"  // brighter purple border
+                    : isMysteryCell
+                      ? "2px solid rgba(100,160,255,0.85)"
+                      : "1px solid rgba(255,255,255,0.08)",
+                boxShadow: isBonusCell
+                  ? "0 0 18px 6px rgba(255,60,60,0.32), inset 0 0 8px rgba(255,100,100,0.06)"
+                  : highlighted
+                    ? "0 0 16px 5px rgba(180,100,255,0.45)" // glowing purple outline
+                    : "0 2px 10px rgba(0,0,0,0.35)",
+                // subtle inner-shadow / depth (optional) via drop-shadow filter
+                filter: isBonusCell
+                  ? "drop-shadow(0 0 8px rgba(255,80,80,0.5))"
+                  : highlighted
+                    ? "drop-shadow(0 0 4px rgba(200,150,255,0.4))"
+                    : "drop-shadow(0 0 2px rgba(0,0,0,0.6))",
 
                 transform: pulsing ? "scale(1.04)" : "scale(1)",
                 transition:
@@ -410,6 +447,58 @@ function Reel({ col, symbols, offset, transitionMs, hl, pulse }: ReelProps) {
           );
         })}
       </div>
+      {/* Dimmer just for this reel (only when dim is true) */}
+      {dim && (
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: "rgba(0,0,0,0.35)",
+            borderRadius: 16,
+            pointerEvents: "none",
+          }}
+        />
+      )}
+
+      {/* Pre-burst ❓ overlay for this reel */}
+      {preBurstRows && preBurstRows.size > 0 && (
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              display: "grid",
+              gridTemplateRows: `repeat(${ROWS}, ${CELL_H}px)`,
+              rowGap: `${CELL_GAP}px`,
+              pointerEvents: "none",
+            }}
+          >
+            {Array.from({ length: ROWS }, (_, r) => (
+              preBurstRows.has(r) ? (
+                <div
+                  key={r}
+                  style={{
+                    boxSizing: "border-box",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    width: CELL_H,
+                    height: CELL_H,
+                    borderRadius: 14,
+                    background: "#0b0f14",
+                    border: "2px solid rgba(100,160,255,0.85)",
+                    boxShadow: "0 0 0 3px rgba(100,160,255,0.22)",
+                    transform: "scale(0.9)",
+                    animation: "popIn 180ms ease-out forwards",
+                  }}
+                >
+                  <SymbolSprite sym={"❓"} />
+                </div>
+              ) : (
+                <div key={r} />
+              )
+            ))}
+          </div>
+        )}
     </div>
   );
 }
@@ -450,12 +539,57 @@ function randomWalkCluster(rng: ()=>number, n: number): Pos[] {
   return cells;
 }
 
+// Pool that can replace a cell WITHOUT placing BonusSym
+const NO_BONUS_POOL = REEL_WEIGHTS_BY_REEL.map(col =>
+  col.map(x => x.sym === "BonusSym" ? { ...x, weight: 0 } : x)
+);
+
+/** Replace extra BonusSym in a column so only 1 remains. */
+function enforceOneBonusPerColumn(grid: Sym[][], rng: () => number) {
+  for (let c = 0; c < COLS; c++) {
+    const rows: number[] = [];
+    for (let r = 0; r < ROWS; r++) if (grid[r][c] === "BonusSym") rows.push(r);
+    if (rows.length > 1) {
+      // keep one randomly, replace the rest with a non-bonus symbol from this reel
+      const keep = rows[Math.floor(rng() * rows.length)];
+      for (const r of rows) if (r !== keep) {
+        grid[r][c] = pickWeighted(rng, NO_BONUS_POOL[c]).sym as Sym;
+      }
+    }
+  }
+  return grid;
+}
+
 /** —— App —— */
 export default function App() {
   const [slowMode, setSlowMode] = useState(false);
   const speedFactor = slowMode ? 1.8 : 1;
 
-  const [seed, setSeed] = useState(20250828);
+  const [seed, setSeed] = useState<number>(() => {
+    try {
+      const saved = localStorage.getItem("rngSeed");
+      if (saved) return (parseInt(saved, 10) | 0) >>> 0;
+      // strong random init
+      let s = 0;
+      if (window.crypto && (window.crypto as any).getRandomValues) {
+        const a = new Uint32Array(1);
+        (window.crypto as any).getRandomValues(a);
+        s = a[0] >>> 0;
+      } else {
+        // fallback
+        s = ((Date.now() ^ Math.floor(Math.random() * 2 ** 31)) >>> 0);
+      }
+      localStorage.setItem("rngSeed", String(s));
+      return s;
+    } catch {
+      return ((Date.now() ^ Math.floor(Math.random() * 2 ** 31)) >>> 0);
+    }
+  });
+  // Keep seed persisted if it changes (we still do +1 per spin)
+  useEffect(() => {
+    try { localStorage.setItem("rngSeed", String(seed >>> 0)); } catch {}
+  }, [seed]);
+
   const rng = useMemo(() => mulberry32(seed), [seed]);
 
   // Reels
@@ -472,6 +606,54 @@ export default function App() {
   const [lastWin, setLastWin] = useState(0);
   const [hl, setHl] = useState<Set<string>>(new Set());
   const [breakdown, setBreakdown] = useState<string[]>([]);
+  // --- WIN SCREEN state & helpers ---
+  const [winVisible, setWinVisible] = useState(false);
+  const [winLabel, setWinLabel] = useState<string>("WIN!");
+  const [winCurrent, setWinCurrent] = useState(0);
+
+  const rafRef = useRef<number | null>(null);
+  const winResolveRef = useRef<(() => void) | null>(null);
+
+  function easeOutCubic(t: number) {
+    return 1 - Math.pow(1 - t, 3);
+  }
+
+  function startCountUp(from: number, to: number, duration = 1200) {
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    const start = performance.now();
+    setWinCurrent(from);
+    const tick = (now: number) => {
+      const p = Math.min(1, (now - start) / duration);
+      const v = from + (to - from) * easeOutCubic(p);
+      setWinCurrent(v);
+      if (p < 1) {
+        rafRef.current = requestAnimationFrame(tick);
+      } else {
+        rafRef.current = null;
+        setWinCurrent(to);
+      }
+    };
+    rafRef.current = requestAnimationFrame(tick);
+  }
+
+  /** Visa Win Screen och vänta på klick för att fortsätta. */
+  function showWinScreen(amount: number, label = "WIN!", from = 0, duration = 1200): Promise<void> {
+    const to = Math.max(0, amount);
+  setWinLabel(label);
+    setWinVisible(true);
+    startCountUp(from, to, duration);
+
+    return new Promise<void>((resolve) => {
+      winResolveRef.current = () => {
+        setWinVisible(false);
+        if (rafRef.current) {
+          cancelAnimationFrame(rafRef.current);
+          rafRef.current = null;
+        }
+        resolve();
+      };
+    });
+  }
   const [spinning, setSpinning] = useState(false);
   const [pulseKeys, setPulseKeys] = useState<Set<string>>(new Set());
   const [flipKeys, setFlipKeys] = useState<Set<string>>(new Set());
@@ -482,13 +664,25 @@ export default function App() {
   const [bonusSticky, setBonusSticky] = useState<Set<string>>(new Set()); // "r,c"
   const [bonusTotalWin, setBonusTotalWin] = useState(0);
   const [bonusTarget, setBonusTarget] = useState<PaySym | null>(null);
+  // Track current bonus spin (0 when not running, 1..N during bonus)
+  const [bonusSpin, setBonusSpin] = useState(0);
 
   // BUY modal
   const [buyOpen, setBuyOpen] = useState(false);
   const [buyBet, setBuyBet] = useState<number>(1);
 
-  // Overlay (bonus reveal)
-  const [overlay, setOverlay] = useState<string | null>(null);
+  // Debug: force exactly one mystery burst on the next base spin
+  const [forceBurstOnce, setForceBurstOnce] = useState(false);
+
+  // Dim the slot area during an incoming burst while spinning
+  const [dimSpin, setDimSpin] = useState(false);
+
+  // Overlay: during spin, show ❓ popping one-by-one over the spinning reels
+  const [preBurstSet, setPreBurstSet] = useState<Set<string>>(new Set());
+
+  // NEW – dedicated target overlay that can show the PNG sprite
+  const [showTargetOverlay, setShowTargetOverlay] = useState(false);
+  const [targetOverlaySym, setTargetOverlaySym] = useState<PaySym | null>(null);
 
   const { enabled: soundOn, enable: enableSound, muted, setMuted, click, tickSmall, flipSound, bling } = useAudio();
 
@@ -520,6 +714,16 @@ export default function App() {
     return () => clearTimeout(t);
   }, [hl]);
 
+  // keep `breakdown` referenced so we can keep using it internally
+  // (UI card was removed; this prevents unused-variable lint errors)
+  useEffect(() => {
+    if (breakdown.length > 0) {
+      // intentionally no-op in production; useful for debugging
+      // eslint-disable-next-line no-console
+      console.debug("breakdown:", breakdown);
+    }
+  }, [breakdown]);
+
   const delay = (ms:number) => new Promise(r => setTimeout(r, ms));
 
   async function animateToGrid(
@@ -543,7 +747,7 @@ export default function App() {
     setDisplayGrid(target);
     setReelStrips(strips);
 
-    const VIEW_PAD = 4;
+    const VIEW_PAD = 0;
     const endOffsets = strips.map(
       s => -((s.length - ROWS) * (CELL_H + CELL_GAP)) - VIEW_PAD
     );
@@ -555,127 +759,150 @@ export default function App() {
     await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
     setReelDur(durs);
     setReelOffset(endOffsets);
-    durs.forEach(ms => setTimeout(() => click(), ms));
+    // single final click when the last reel stops to avoid stacked sounds
+    setTimeout(() => click(), durs[durs.length - 1]);
     await new Promise(r => setTimeout(r, durs[durs.length - 1] + 30));
   }
 
   /** ——— Bas-spinn ——— */
-  async function spin() {
+  async function spin(forceBurst: boolean = false) {
     if (spinning || balance < bet || bonusActive) return;
     setSpinning(true);
+    // ✅ prevent leftover pulses/flip animations from previous spin
+    // clear both pulse and flip keys immediately so nothing pops during spin
+    setPulseKeys(new Set());
+    setFlipKeys(new Set());
     setHl(new Set());
     setBreakdown([]);
     setLastWin(0);
     if (!soundOn) await enableSound();
 
-    // Base spinn från BASE_STRIP_POOL (inga naturliga ❓)
-    const target = spinGrid(rng, BASE_STRIP_POOL);
+  // Base spinn från BASE_STRIP_POOL (inga naturliga ❓)
+  let target = spinGrid(rng, BASE_STRIP_POOL);
+  target = enforceOneBonusPerColumn(target, rng);   // ensure max 1 BonusSym per column
     setResultGrid(target);
     setSeed(s => (s + 1) | 0);
-    await animateToGrid(target, { pool: BASE_STRIP_POOL });
 
-    // — BASE mystery: BURSTS + ev. extra burst —
+    // — BASE mystery: exactly ONE burst (or none) —
     let working = target.map(row => row.slice()) as Sym[][];
     const bursts: Pos[][] = [];
 
-    if (rng() < BASE_MYSTERY_BURST_CHANCE) {
-      const n = Math.floor(BASE_MYSTERY_BURST_MIN + rng()*(BASE_MYSTERY_BURST_MAX - BASE_MYSTERY_BURST_MIN + 1));
+    const wantBurst = forceBurst || forceBurstOnce || (rng() < BASE_MYSTERY_BURST_CHANCE);
+    if (forceBurstOnce) setForceBurstOnce(false);
+
+    // Precompute ONE cluster if needed (we decide before animation so overlay can pop)
+    if (wantBurst) {
+      const n = Math.floor(
+        BASE_MYSTERY_BURST_MIN + rng() * (BASE_MYSTERY_BURST_MAX - BASE_MYSTERY_BURST_MIN + 1)
+      );
       const cells = randomWalkCluster(rng, n);
-      // tryck in start i col 0 / 1 ibland
-      if (rng() < BASE_FORCE_COL0_IN_BURST_PROB && !cells.some(([_,c]) => c===0)) {
-        cells.push([Math.floor(rng()*ROWS), 0]);
+      if (rng() < BASE_FORCE_COL0_IN_BURST_PROB && !cells.some(([_, c]) => c === 0)) {
+        cells.push([Math.floor(rng() * ROWS), 0]);
       }
-      if (rng() < BASE_FORCE_COL1_IN_BURST_PROB && !cells.some(([_,c]) => c===1)) {
-        cells.push([Math.floor(rng()*ROWS), 1]);
+      if (rng() < BASE_FORCE_COL1_IN_BURST_PROB && !cells.some(([_, c]) => c === 1)) {
+        cells.push([Math.floor(rng() * ROWS), 1]);
       }
       bursts.push(cells);
     }
-    if (rng() < BASE_SECOND_BURST_CHANCE) {
-      const n2 = 3 + Math.floor(rng()*4);
-      const cells2 = randomWalkCluster(rng, n2);
-      if (rng() < 0.25 && !cells2.some(([_,c]) => c===0)) {
-        cells2.push([Math.floor(rng()*ROWS), 0]);
-      }
-      bursts.push(cells2);
+
+    // If we will have a burst, dim the slot area while the reels spin
+    if (wantBurst) setDimSpin(true);
+
+    // 🔁 start the spin animation NOW (do not await yet)
+    const animP = animateToGrid(target, { pool: BASE_STRIP_POOL });
+
+    // 🔮 while reels are spinning, pop the ❓ overlay a bit after start
+    let popP: Promise<void> | null = null;
+    if (wantBurst && bursts.length) {
+      const seq = bursts[0].slice(); // one cluster by design
+      popP = (async () => {
+        setPreBurstSet(new Set());
+        await delay(300 * speedFactor);          // small head-start so pops occur during spin
+        for (let i = 0; i < seq.length; i++) {
+          const [r, c] = seq[i];
+          const k = key(r, c);
+          setPreBurstSet(prev => {
+            const s = new Set(prev);
+            s.add(k);
+            return s;
+          });
+          await delay(90 * speedFactor);         // pleasing stagger while reels still spinning
+        }
+      })();
     }
 
-    // applicera ❓
-    for (const cluster of bursts) {
-      for (const [r,c] of cluster) working[r][c] = "❓";
-    }
+    // ⏳ wait for both the spin and the pop overlay
+    if (popP) await popP;
+    await animP;
 
-    // —— Flippar ❓: kluster-reveal + kontextbias (rad + reel1/2 totals) ——
-    const mystPos: Array<[number,number]> = [];
+    // commit to stopped state
+    setReelStrips(Array.from({ length: COLS }, () => []));
+    setReelOffset(Array(COLS).fill(0));
+    setReelDur(Array(COLS).fill(0));
+
+  // 1) stop dimming, but keep the pre-burst overlay visible (don't clear it yet)
+  setDimSpin(false);
+
+  // 2) write the real ❓ into the working grid while the overlay still covers it
+  for (const [r, c] of (bursts[0] ?? [])) working[r][c] = "❓";
+  setDisplayGrid(working);
+
+  // ensure the ❓ frame has been painted before removing the overlay (avoid a flash)
+  await new Promise(res => requestAnimationFrame(() => requestAnimationFrame(res)));
+
+  // now it is safe to clear the pre-burst overlay
+  setPreBurstSet(new Set());
+
+    // collect mystery positions and animate a single flip pulse before reveal
+    const mystPos: Array<[number, number]> = [];
     for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
-      if (isMystery(working[r][c])) mystPos.push([r,c]);
+      if (isMystery(working[r][c])) mystPos.push([r, c]);
     }
 
     if (mystPos.length) {
-      setFlipKeys(new Set(mystPos.map(([r,c])=>key(r,c))));
+      setFlipKeys(new Set(mystPos.map(([r, c]) => key(r, c))));
       flipSound();
-      await delay(220*speedFactor);
+      await delay(200 * speedFactor);
 
-      // global counts på reel 0 & 1
-      const reel1: Record<PaySym, number> =
-        {"🍒":0,"🍋":0,"🍇":0,"🍊":0,"🥝":0,"🥥":0,"🔔":0,"⭐":0,"💎":0,"🍀":0};
-      const reel2: Record<PaySym, number> =
-        {"🍒":0,"🍋":0,"🍇":0,"🍊":0,"🥝":0,"🥥":0,"🔔":0,"⭐":0,"💎":0,"🍀":0};
-      for (let rr = 0; rr < ROWS; rr++) {
-        const s0 = working[rr][0];
-        const s1 = working[rr][1];
-        if (s0 !== "❓" && s0 !== "🎟️") reel1[s0 as PaySym]++;
-        if (s1 !== "❓" && s1 !== "🎟️") reel2[s1 as PaySym]++;
-      }
-
-      // hjälp-funktion för att bygga vikter för en cell
-      function buildWeightsForCell(r:number, c:number): Record<PaySym, number> {
-        const dyn: Record<PaySym, number> = { ...BASE_REVEAL_WEIGHTS };
-        // global tidig-reel bias
-        (Object.keys(dyn) as PaySym[]).forEach(sym => {
-          dyn[sym] *= (1 + BASE_REEL1_COUNT_ALIGNMENT * reel1[sym]);
-          dyn[sym] *= (1 + BASE_REEL2_COUNT_ALIGNMENT * reel2[sym]);
-        });
-        // samma rad – direkt vänster
-        if (c > 0) {
-          const left = working[r][c-1];
-          if (left !== "❓" && left !== "🎟️") {
-            dyn[left as PaySym] *= BASE_PREV_REEL_SAME_ROW_BOOST;
+      // pick ONE symbol for the cluster (center-weighted)
+      const cluster = bursts[0];
+      if (cluster && cluster.length > 0) {
+        const mid = cluster[Math.floor(cluster.length / 2)];
+        // build weights as before (local helper inline)
+        function buildWeightsForCell(r:number, c:number): Record<PaySym, number> {
+          const dyn: Record<PaySym, number> = { ...BASE_REVEAL_WEIGHTS };
+          // bias by reel 0/1 counts
+          const reel1: Record<PaySym, number> = {"🍒":0,"🍋":0,"🍇":0,"🍊":0,"🥝":0,"🥥":0,"🔔":0,"⭐":0,"💎":0,"🍀":0};
+          const reel2: Record<PaySym, number> = {"🍒":0,"🍋":0,"🍇":0,"🍊":0,"🥝":0,"🥥":0,"🔔":0,"⭐":0,"💎":0,"🍀":0};
+          for (let rr = 0; rr < ROWS; rr++) {
+            const s0 = working[rr][0];
+            const s1 = working[rr][1];
+            if (s0 !== "❓" && s0 !== "BonusSym") reel1[s0 as PaySym]++;
+            if (s1 !== "❓" && s1 !== "BonusSym") reel2[s1 as PaySym]++;
           }
+          (Object.keys(dyn) as PaySym[]).forEach(sym => {
+            dyn[sym] *= (1 + BASE_REEL1_COUNT_ALIGNMENT * reel1[sym]);
+            dyn[sym] *= (1 + BASE_REEL2_COUNT_ALIGNMENT * reel2[sym]);
+          });
+          if (c > 0) {
+            const left = working[r][c-1];
+            if (left !== "❓" && left !== "BonusSym") dyn[left as PaySym] *= BASE_PREV_REEL_SAME_ROW_BOOST;
+          }
+          if (c > 1) {
+            const left2 = working[r][c-2];
+            if (left2 !== "❓" && left2 !== "BonusSym") dyn[left2 as PaySym] *= BASE_PREV2_REEL_SAME_ROW_BOOST;
+          }
+          return dyn;
         }
-        // samma rad – två vänster
-        if (c > 1) {
-          const left2 = working[r][c-2];
-          if (left2 !== "❓" && left2 !== "🎟️") {
-            dyn[left2 as PaySym] *= BASE_PREV2_REEL_SAME_ROW_BOOST;
-          }
-        }
-        return dyn;
-      }
 
-      // 1) för varje burst: ibland använd EN gemensam symbol
-      for (const cluster of bursts) {
-        if (cluster.length === 0) continue;
-        if (rng() < BASE_CLUSTER_SINGLE_REVEAL_PROB) {
-          // använd mitten-cellen för att hämta en representativ kontext
-          const mid = cluster[Math.floor(cluster.length/2)];
-          const dyn = buildWeightsForCell(mid[0], mid[1]);
-          const sym = pickPaySymbolWeighted(rng, dyn);
-          for (const [r,c] of cluster) {
-            working[r][c] = sym;
-          }
-        } else {
-          // oberoende – men med kontextbias per cell
-          for (const [r,c] of cluster) {
-            const dyn = buildWeightsForCell(r,c);
-            working[r][c] = pickPaySymbolWeighted(rng, dyn);
-          }
-        }
-      }
+        const dyn = buildWeightsForCell(mid[0], mid[1]);
+        const picked = pickPaySymbolWeighted(rng, dyn);
+        for (const [r, c] of cluster) working[r][c] = picked;
+        setDisplayGrid(working);
 
-      setDisplayGrid(working);
-      setTimeout(() => setFlipKeys(new Set()), 100);
-    } else {
-      setDisplayGrid(working);
+        // clear flip pulse shortly after
+        setTimeout(() => setFlipKeys(new Set()), 100);
+      }
     }
 
     // utvärdera
@@ -701,8 +928,13 @@ export default function App() {
       setBreakdown([]);
     }
 
+    // --- Win screen i BASE om ≥ 20x bet ---
+    if (res.total >= BIG_WIN_MULT * bet) {
+      await showWinScreen(res.total, "BIG WIN");
+    }
+
     // SCATTER → bonus
-    const scatters = working.flat().filter(isScatter).length;
+  const scatters = working.flat().filter(isScatter).length;
     if (scatters >= 3) {
       const targetSym = pickPaySymbolWeighted(rng, TARGET_PICK_WEIGHTS);
       await enterBonusMystery(targetSym, false);
@@ -723,20 +955,31 @@ export default function App() {
     setBonusTotalWin(0);
     setHl(new Set());
     setBreakdown([`${fromBuy ? "BONUS BUY" : "BONUS TRIGGER"} — Mystery Sticky Bonus`]);
+    // initialize bonus spin counter
+    setBonusSpin(0);
 
-    // 🎯 Dramatiskt target-reveal (endast i bonus)
-    const revealSymbols = PAY_SYMBOLS;
-    setOverlay("🎯 Choosing target...");
+    // 🎯 Dramatiskt target-reveal (endast i bonus) — now with PNG sprites
+    setShowTargetOverlay(true);
+    setTargetOverlaySym(null);
+
+    // quick “Choosing…” pause
     await delay(500);
+
+    // spin through a few fake symbols using PNG sprites
     for (let i = 0; i < 10; i++) {
-      const fakeSym = revealSymbols[Math.floor(rng()*revealSymbols.length)];
-      setOverlay(`🎯 Target: ${fakeSym}`);
-      await delay(150 + i*30);
+      const fakeSym = PAY_SYMBOLS[Math.floor(rng() * PAY_SYMBOLS.length)];
+      setTargetOverlaySym(fakeSym);
+      await delay(150 + i * 30);
     }
-    setOverlay(`🎯 Target: ${targetSym}`);
+
+    // land on the real target
+    setTargetOverlaySym(targetSym);
     bling();
     await delay(1200);
-    setOverlay(null);
+
+    // hide overlay
+    setShowTargetOverlay(false);
+    setTargetOverlaySym(null);
 
     let running = 0;
     let sticky = new Set<string>();
@@ -749,6 +992,9 @@ export default function App() {
     }
 
     for (let i = 0; i < N_BONUS_SPINS; i++) {
+      // show 1-based spin index in the UI
+      setBonusSpin(i + 1);
+      setHl(new Set()); // clear any previous highlights before spinning
       const raw = spinGrid(rng, bonusPool);
       await animateToGrid(raw, { pool: bonusPool });
 
@@ -796,6 +1042,11 @@ export default function App() {
       setBonusTotalWin(running);
       setLastWin(res.total);
 
+      // --- Win screen i BONUS om ≥ 20x bet ---
+      if (res.total >= BIG_WIN_MULT * bet) {
+        await showWinScreen(res.total, "BONUS BIG WIN");
+      }
+
       if (res.parts.length > 0) {
         for (const part of res.parts) {
           setHl(part.positions);
@@ -817,15 +1068,20 @@ export default function App() {
       setBonusSpinsLeft(N_BONUS_SPINS - (i + 1));
     }
 
-    setBalance(b => b + running);
+  setBalance(b => b + running);
     bling();
     setBreakdown([`BONUS ENDED — 🎯 ${targetSym} • Total: ${format(running)}`]);
 
-    setBonusActive(false);
-    setBonusSticky(new Set());
-    setBonusSpinsLeft(0);
-    setBonusTarget(null);
-    setOverlaySymbol(null);
+  // --- Alltid visa total vinst efter bonus ---
+  await showWinScreen(running, "BONUS TOTAL", 0, 1400);
+
+  setBonusActive(false);
+  setBonusSticky(new Set());
+  setBonusSpinsLeft(0);
+  setBonusTarget(null);
+  // reset bonus spin counter
+  setBonusSpin(0);
+  setOverlaySymbol(null);
   }
 
   /** ——— BUY modal control ——— */
@@ -838,11 +1094,36 @@ export default function App() {
     if (spinning || bonusActive) return;
     const cost = 100 * buyBet;
     if (balance < cost) return;
+
     setBuyOpen(false);
     setBalance(b => b - cost);
     setBet(buyBet);
-    const targetSym = pickPaySymbolWeighted(rng, TARGET_PICK_WEIGHTS);
     if (!soundOn) await enableSound();
+
+    // 1) Build a "natural trigger" spin result
+    let g = spinGrid(rng, BASE_STRIP_POOL);
+    g = enforceOneBonusPerColumn(g, rng);
+
+    // choose 3–5 distinct columns to show BonusSym (one per column)
+    const colsShuffled = Array.from({ length: COLS }, (_, i) => i)
+      .sort(() => rng() - 0.5);
+    const k = 3 + Math.floor(rng() * 3); // 3..5 scatters
+    const chosenCols = colsShuffled.slice(0, k);
+
+    for (const c of chosenCols) {
+      const r = Math.floor(rng() * ROWS);
+      g[r][c] = "BonusSym";
+    }
+    // safety: still guarantee 1 per column
+    g = enforceOneBonusPerColumn(g, rng);
+
+    // 2) Animate that trigger spin like normal reels stopping
+    setSpinning(true);
+    await animateToGrid(g, { pool: BASE_STRIP_POOL });
+    setSpinning(false);
+
+    // 3) Now start the bonus exactly like a natural trigger
+    const targetSym = pickPaySymbolWeighted(rng, TARGET_PICK_WEIGHTS);
     await enterBonusMystery(targetSym, true);
   }
 
@@ -854,9 +1135,10 @@ export default function App() {
       let totalWin = 0, hits = 0;
       for (let i = 0; i < spins; i++) {
         // Base spinn från BASE_STRIP_POOL (inga naturliga ❓)
-        let grid = spinGrid(rngSim, BASE_STRIP_POOL);
+  let grid = spinGrid(rngSim, BASE_STRIP_POOL);
+  grid = enforceOneBonusPerColumn(grid, rngSim);
 
-        // bursts
+        // bursts (exactly one cluster at most)
         const burstsSim: Pos[][] = [];
         if (rngSim() < BASE_MYSTERY_BURST_CHANCE) {
           const n = Math.floor(BASE_MYSTERY_BURST_MIN + rngSim()*(BASE_MYSTERY_BURST_MAX - BASE_MYSTERY_BURST_MIN + 1));
@@ -869,14 +1151,6 @@ export default function App() {
           }
           burstsSim.push(cells);
         }
-        if (rngSim() < BASE_SECOND_BURST_CHANCE) {
-          const n2 = 3 + Math.floor(rngSim()*4);
-          const cells2 = randomWalkCluster(rngSim, n2);
-          if (rngSim() < 0.25 && !cells2.some(([_,c]) => c===0)) {
-            cells2.push([Math.floor(rngSim()*ROWS), 0]);
-          }
-          burstsSim.push(cells2);
-        }
         for (const cl of burstsSim) for (const [r,c] of cl) grid[r][c] = "❓";
 
         // global reel 0/1 counts
@@ -887,8 +1161,8 @@ export default function App() {
         for (let rr = 0; rr < ROWS; rr++) {
           const s0 = grid[rr][0];
           const s1 = grid[rr][1];
-          if (s0 !== "❓" && s0 !== "🎟️") reel1[s0 as PaySym]++;
-          if (s1 !== "❓" && s1 !== "🎟️") reel2[s1 as PaySym]++;
+          if (s0 !== "❓" && s0 !== "BonusSym") reel1[s0 as PaySym]++;
+          if (s1 !== "❓" && s1 !== "BonusSym") reel2[s1 as PaySym]++;
         }
         function buildWeightsForCellSim(r:number, c:number): Record<PaySym, number> {
           const dyn: Record<PaySym, number> = { ...BASE_REVEAL_WEIGHTS };
@@ -898,11 +1172,11 @@ export default function App() {
           });
           if (c > 0) {
             const left = grid[r][c-1];
-            if (left !== "❓" && left !== "🎟️") dyn[left as PaySym] *= BASE_PREV_REEL_SAME_ROW_BOOST;
+            if (left !== "❓" && left !== "BonusSym") dyn[left as PaySym] *= BASE_PREV_REEL_SAME_ROW_BOOST;
           }
           if (c > 1) {
             const left2 = grid[r][c-2];
-            if (left2 !== "❓" && left2 !== "🎟️") dyn[left2 as PaySym] *= BASE_PREV2_REEL_SAME_ROW_BOOST;
+            if (left2 !== "❓" && left2 !== "BonusSym") dyn[left2 as PaySym] *= BASE_PREV2_REEL_SAME_ROW_BOOST;
           }
           return dyn;
         }
@@ -1018,9 +1292,10 @@ export default function App() {
 
       for (let i = 0; i < spins; i++) {
         // Base spinn ur BASE_STRIP_POOL
-        let grid = spinGrid(rngSim, BASE_STRIP_POOL);
+  let grid = spinGrid(rngSim, BASE_STRIP_POOL);
+  grid = enforceOneBonusPerColumn(grid, rngSim);
 
-        // bursts
+        // bursts (exactly one cluster at most)
         const burstsSim: Pos[][] = [];
         if (rngSim() < BASE_MYSTERY_BURST_CHANCE) {
           const n = Math.floor(BASE_MYSTERY_BURST_MIN + rngSim()*(BASE_MYSTERY_BURST_MAX - BASE_MYSTERY_BURST_MIN + 1));
@@ -1033,14 +1308,6 @@ export default function App() {
           }
           burstsSim.push(cells);
         }
-        if (rngSim() < BASE_SECOND_BURST_CHANCE) {
-          const n2 = 3 + Math.floor(rngSim()*4);
-          const cells2 = randomWalkCluster(rngSim, n2);
-          if (rngSim() < 0.25 && !cells2.some(([_,c]) => c===0)) {
-            cells2.push([Math.floor(rngSim()*ROWS), 0]);
-          }
-          burstsSim.push(cells2);
-        }
         for (const cl of burstsSim) for (const [r,c] of cl) grid[r][c] = "❓";
 
         // reel 0/1 counts
@@ -1051,8 +1318,8 @@ export default function App() {
         for (let rr = 0; rr < ROWS; rr++) {
           const s0 = grid[rr][0];
           const s1 = grid[rr][1];
-          if (s0 !== "❓" && s0 !== "🎟️") reel1[s0 as PaySym]++;
-          if (s1 !== "❓" && s1 !== "🎟️") reel2[s1 as PaySym]++;
+          if (s0 !== "❓" && s0 !== "BonusSym") reel1[s0 as PaySym]++;
+          if (s1 !== "❓" && s1 !== "BonusSym") reel2[s1 as PaySym]++;
         }
         function buildWeightsForCellSim(r:number, c:number): Record<PaySym, number> {
           const dyn: Record<PaySym, number> = { ...BASE_REVEAL_WEIGHTS };
@@ -1062,11 +1329,11 @@ export default function App() {
           });
           if (c > 0) {
             const left = grid[r][c-1];
-            if (left !== "❓" && left !== "🎟️") dyn[left as PaySym] *= BASE_PREV_REEL_SAME_ROW_BOOST;
+            if (left !== "❓" && left !== "BonusSym") dyn[left as PaySym] *= BASE_PREV_REEL_SAME_ROW_BOOST;
           }
           if (c > 1) {
             const left2 = grid[r][c-2];
-            if (left2 !== "❓" && left2 !== "🎟️") dyn[left2 as PaySym] *= BASE_PREV2_REEL_SAME_ROW_BOOST;
+            if (left2 !== "❓" && left2 !== "BonusSym") dyn[left2 as PaySym] *= BASE_PREV2_REEL_SAME_ROW_BOOST;
           }
           return dyn;
         }
@@ -1091,7 +1358,7 @@ export default function App() {
         totalBaseWin += baseRes.total;
 
         // Naturlig bonus-trigger?
-        const sc = grid.flat().filter(s => s === "🎟️").length;
+  const sc = grid.flat().filter(s => s === "BonusSym").length;
         if (sc >= 3) {
           triggers++;
 
@@ -1157,18 +1424,40 @@ export default function App() {
 
   /** ——— UI —— */
   return (
-    <div style={{ maxWidth: 1100, margin: "24px auto", fontFamily: "system-ui, Arial" }}>
+    <div
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "transparent",
+      }}
+    >
+      <div style={{ maxWidth: 1100, margin: "24px auto", fontFamily: "system-ui, Arial" }}>
       <style>{`
         @keyframes pulseAnim { 0%{transform:scale(1)} 50%{transform:scale(1.06)} 100%{transform:scale(1)} }
         .pulse { animation: pulseAnim 0.7s ease-out; }
         @keyframes flipAnim { 0%{transform:rotateX(0)} 50%{transform:rotateX(90deg)} 100%{transform:rotateX(0)} }
         .flip { animation: flipAnim 0.26s ease-in-out; }
+        @keyframes popIn { to { transform: scale(1); } }
+        @keyframes winPopIn {
+          0%   { transform: translateY(6px) scale(0.96); opacity: 0; }
+          60%  { transform: translateY(0)    scale(1.02); opacity: 1; }
+          100% { transform: translateY(0)    scale(1.00); opacity: 1; }
+        }
       `}</style>
   
       <div style={{
-        background: "linear-gradient(#0f1215,#0b0d10)",
+        // use the PNG on the panel and clip to rounded corners
+        backgroundImage: 'url("/assets/background.png")',
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        backgroundColor: "#0b0d10",
+
         border: "1px solid rgba(255,255,255,.06)",
         borderRadius: 18,
+        overflow: "hidden",
         padding: 16,
         color: "#f6f7f9",
         boxShadow: "0 20px 60px rgba(0,0,0,.45)"
@@ -1202,6 +1491,8 @@ export default function App() {
           >
             {slowMode ? "🐢 Slow Mode" : "⚡ Normal Speed"}
           </button>
+
+          {/* ...existing header buttons ... */}
         </div>
   
         {/* Reels + STICKY OVERLAY */}
@@ -1223,7 +1514,9 @@ export default function App() {
                 offset={reelStrips[c].length ? reelOffset[c] : 0}
                 transitionMs={reelStrips[c].length ? reelDur[c] : 0}
                 hl={hl}
-                pulse={flipKeys.size ? flipKeys : pulseKeys}
+                pulse={spinning ? new Set() : (flipKeys.size ? flipKeys : pulseKeys)}
+                preBurstRows={rowSetForCol(preBurstSet, c)}
+                dim={dimSpin}
               />
             ))}
           </div>
@@ -1263,14 +1556,16 @@ export default function App() {
                       const showSym = overlayShowSymbol && overlaySymbol ? overlaySymbol : "❓";
                       return (
                         <div key={r} style={{
+                          position:"relative",
                           display:"flex", alignItems:"center", justifyContent:"center",
+                          width: CELL_H, height: CELL_H,
                           borderRadius: 14,
-                          background: "transparent",
-                          border: "2px solid rgba(100,160,255,0.70)",
-                          boxShadow: "0 0 0 3px rgba(100,160,255,0.18)",
-
-                          fontSize: "1.7rem",
-                          fontWeight: 700,
+                          // OPAQUE cover so nothing underneath can be seen
+                          background: "#0b0f14",
+                          border: "2px solid rgba(100,160,255,0.85)",
+                          boxShadow: "0 0 0 3px rgba(100,160,255,0.22)",
+                          // make sure overlay is on top of reel cells
+                          zIndex: 5,
                         }}>
                           <SymbolSprite sym={showSym as Sym} />
                         </div>
@@ -1282,6 +1577,8 @@ export default function App() {
             </div>
           )}
         </div>
+
+        {/* per-reel dimming and pre-burst overlays are rendered inside each Reel now */}
   
         {/* Bottom bar */}
         <div style={{
@@ -1301,7 +1598,7 @@ export default function App() {
           {/* Spin / Buy */}
           <div style={{ display:"flex", gap:10, justifyContent:"center" }}>
             <button
-              onClick={spin}
+              onClick={() => spin()}
               disabled={spinning || bonusActive || balance < bet}
               style={{
                 padding:"12px 22px", borderRadius:999,
@@ -1316,7 +1613,7 @@ export default function App() {
             </button>
   
             <button
-              onClick={() => { if (!spinning && !bonusActive) setBuyOpen(true); }}
+              onClick={openBuy}
               disabled={spinning || bonusActive}
               style={{
                 padding:"12px 18px", borderRadius:12,
@@ -1330,13 +1627,52 @@ export default function App() {
             >
               BUY BONUS 100×
             </button>
+            
+            <button
+              onClick={() => spin(true)}
+              disabled={spinning || bonusActive || forceBurstOnce}
+              style={{
+                padding:"12px 14px", borderRadius:12,
+                border:"1px solid rgba(255,255,255,.12)",
+                fontWeight:800, background:"#cde7ff", color:"#111",
+                minWidth:150,
+                cursor: (!spinning && !bonusActive && !forceBurstOnce) ? "pointer" : "not-allowed",
+                opacity: (!spinning && !bonusActive && !forceBurstOnce) ? 1 : 0.6
+              }}
+              title="Force exactly one mystery burst on the next base spin"
+            >
+              🔮 MYSTERY BURST (once)
+            </button>
           </div>
   
           {/* Stats */}
           <div style={{ display:"flex", justifyContent:"flex-end", gap:18 }}>
             {bonusActive && (
-              <div>
-                <b>Bonus:</b> {bonusSpinsLeft} kvar • {bonusTarget ? `🎯 ${bonusTarget}` : ""} • {format(bonusTotalWin)}
+              <div style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
+                <b>Bonus:</b> {bonusSpinsLeft} kvar •
+                <div style={{
+                  color: "#9ef7ff",
+                  fontWeight: 800,
+                  letterSpacing: 0.5,
+                  textShadow: "0 0 10px rgba(120,200,255,0.4)"
+                }}>{`Spins: ${bonusSpin}/${N_BONUS_SPINS}`}</div>
+                {bonusTarget && (
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                    Target:
+                    <span
+                      style={{
+                        width: 26,
+                        height: 26,
+                        display: "inline-flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <SymbolSprite sym={bonusTarget} size={26} />
+                    </span>
+                  </span>
+                )}
+                • {format(bonusTotalWin)}
               </div>
             )}
             <div><b>Vinst:</b> {format(lastWin)}</div>
@@ -1345,15 +1681,9 @@ export default function App() {
         </div>
       </div>
   
-      {/* Breakdown */}
-      {breakdown.length > 0 && (
-        <div style={{ marginTop: 12, textAlign: "center", fontSize: 13, background: "#fafafa", padding: 12, borderRadius: 8, color:"#111" }}>
-          <div style={{ fontWeight: 700, marginBottom: 6 }}>Detaljer:</div>
-          <ul style={{ margin: 0, paddingLeft: 16 }}>
-            {breakdown.map((line, i) => <li key={i}>{line}</li>)}
-          </ul>
-        </div>
-      )}
+      {/* Breakdown UI removed per request */}
+
+      {/* debug card removed */}
   
       {/* Buy modal */}
       {buyOpen && (
@@ -1400,21 +1730,137 @@ export default function App() {
         </div>
       )}
   
-      {/* Overlay text (bonus m.m.) */}
-      {overlay && (
-        <div style={{
-          position:"fixed", inset:0, display:"grid", placeItems:"center",
-          background:"rgba(0,0,0,.45)", zIndex: 2000
-        }}>
-          <div style={{
-            padding:"14px 18px", borderRadius:12,
-            background:"#111", color:"#fff", fontWeight:800, fontSize:22,
-            border:"1px solid rgba(255,255,255,.15)"
-          }}>
-            {overlay}
+      {/* WIN SCREEN OVERLAY — NEON MEDIUM */}
+      {winVisible && (
+        <div
+          onClick={() => winResolveRef.current?.()}
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 3000,
+            display: "grid",
+            placeItems: "center",
+            // mörk halvtransparent bakgrund + lite blur
+            background: "rgba(6, 8, 12, 0.55)",
+            backdropFilter: "blur(2.5px)",
+            cursor: "pointer",
+            userSelect: "none",
+            padding: 16,
+          }}
+          title="Click anywhere to continue"
+        >
+          <div
+            style={{
+              width: "min(92vw, 520px)",
+              minWidth: 320,
+              padding: "18px 20px",
+              borderRadius: 18,
+              // ❌ inga vita borders/innerstrokes
+              border: "none",
+              // neon-panel: mörk glas + svag gradient
+              background:
+                "linear-gradient(180deg, rgba(15,16,28,0.92), rgba(10,12,20,0.92))",
+              // neon-glow (rosa/lila/cyan blandning)
+              boxShadow:
+                "0 0 38px rgba(255, 60, 180, 0.25), 0 0 60px rgba(70, 180, 255, 0.18)",
+              textAlign: "center",
+              color: "#e9f4ff",
+              animation: "winPopIn 340ms cubic-bezier(.2,.85,.2,1) both",
+            }}
+          >
+            {/* RUBRIK — utan summa */}
+            <div
+              style={{
+                fontSize: 14,
+                letterSpacing: 1,
+                marginBottom: 8,
+                // neon-text med gradient
+                background: "linear-gradient(90deg,#b25cff,#ff5fb7,#5ce1ff,#8ac6ff)",
+                WebkitBackgroundClip: "text",
+                backgroundClip: "text",
+                color: "transparent",
+                textShadow: "0 0 10px rgba(178,92,255,0.35)",
+                fontWeight: 800,
+              }}
+            >
+              {winLabel}
+            </div>
+
+            {/* SUMMAN — stor, varm neon-glow */}
+            <div
+              style={{
+                fontWeight: 900,
+                fontSize: 44,
+                lineHeight: 1.08,
+                letterSpacing: 0.4,
+                color: "#fff8e6",
+                textShadow:
+                  "0 0 8px rgba(255,220,160,.55), 0 0 22px rgba(255,120,200,.35), 0 0 30px rgba(80,180,255,.28)",
+              }}
+            >
+              {format(winCurrent)}
+            </div>
+
+            {/* Liten hinttext i cyan */}
+            <div
+              style={{
+                marginTop: 10,
+                fontSize: 12,
+                color: "#c8f4ff",
+                textShadow: "0 0 10px rgba(80,200,255,.35)",
+                opacity: 0.9,
+              }}
+            >
+              Click anywhere to continue
+            </div>
           </div>
         </div>
       )}
+
+      {/* PNG target overlay */}
+      {showTargetOverlay && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            display: "grid",
+            placeItems: "center",
+            background: "rgba(0,0,0,.45)",
+            zIndex: 2000,
+          }}
+        >
+          <div
+            style={{
+              padding: 16,
+              borderRadius: 14,
+              background: "#111",
+              color: "#fff",
+              border: "1px solid rgba(255,255,255,.15)",
+              display: "grid",
+              gap: 10,
+              justifyItems: "center",
+            }}
+          >
+            <div style={{ fontWeight: 800, fontSize: 20 }}>Target</div>
+
+            <div
+              style={{
+                width: 110,
+                height: 110,
+                display: "grid",
+                placeItems: "center",
+                background: "#0b0f14",
+                border: "2px solid rgba(100,160,255,0.85)",
+                borderRadius: 16,
+                boxShadow: "0 0 0 4px rgba(100,160,255,0.18)",
+              }}
+            >
+              {targetOverlaySym && <SymbolSprite sym={targetOverlaySym} size={72} />}
+            </div>
+          </div>
+        </div>
+      )}
+      </div>
     </div>
   );
 }
