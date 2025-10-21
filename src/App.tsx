@@ -1,6 +1,13 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 
-/** —— RNG + weighted pick —— */
+//  Slot configuration & types (moved early so helpers can reference them)
+const ROWS = 4;
+const COLS = 6;
+
+type PaySym = "🍒"|"🍋"|"🍇"|"🍊"|"🥝"|"🥥"|"🔔"|"⭐"|"💎"|"🍀";
+type Sym = PaySym | "BonusSym" | "❓"; // <<— INGA WILDS
+
+// RNG + weighted pick 
 function mulberry32(seed: number) {
   let t = seed >>> 0;
   return () => {
@@ -39,14 +46,7 @@ function globalSymbolWeightsFromReels(pool = REEL_WEIGHTS_BY_REEL) {
   return w;
 }
 
-/** —— Slotkonfiguration —— */
-const ROWS = 4;
-const COLS = 6;
-
-type PaySym = "🍒"|"🍋"|"🍇"|"🍊"|"🥝"|"🥥"|"🔔"|"⭐"|"💎"|"🍀";
-type Sym = PaySym | "BonusSym" | "❓"; // <<— INGA WILDS
-
-// —— Sprites (just nu bara Cherry ersatt av symbol10.png) ——
+// Sprites 
 const SPRITE_MAP: Partial<Record<Sym, string>> = {
   "🍒": "/assets/symbol10.png",
   "🍋": "/assets/symbolJ.png",
@@ -139,9 +139,9 @@ const STRIP_POOL_BONUS = REEL_WEIGHTS_BY_REEL.map(col =>
 /** —— PAYTABLE —— */
 const PAY: Record<PaySym, Partial<Record<3|4|5|6, number>>> = {
   "🍒": {3:0.20, 4:0.35, 5:0.70, 6:1.40},
-  "🍋": {3:0.20, 4:0.35, 5:0.70, 6:1.40},
+  "🍋": {3:0.21, 4:0.37, 5:0.75, 6:1.45},
   "🍇": {3:0.22, 4:0.40, 5:0.80, 6:1.60},
-  "🍊": {3:0.22, 4:0.40, 5:0.80, 6:1.60},
+  "🍊": {3:0.23, 4:0.43, 5:0.85, 6:1.65},
   "🥝": {3:0.24, 4:0.45, 5:0.90, 6:1.80},
   "🥥": {3:0.24, 4:0.45, 5:0.90, 6:1.80},
   "🔔": {3:0.35, 4:0.80, 5:1.80, 6:3.60},
@@ -334,6 +334,10 @@ const CELL_H = 78;
 const CELL_GAP = 6;
 const COL_GAP = 12;
 
+// --- sizes so we can truly center the slot ---
+const SLOT_W = COLS * CELL_H + (COLS - 1) * COL_GAP;
+const SLOT_H = ROWS * CELL_H + (ROWS - 1) * CELL_GAP;
+
 function rowSetForCol(preBurstSet: Set<string>, col: number): Set<number> {
   const s = new Set<number>();
   preBurstSet.forEach(k => {
@@ -366,7 +370,7 @@ function Reel({ col, symbols, offset, transitionMs, hl, pulse, preBurstRows, dim
       style={{
         position: "relative",
         height: visibleH,
-        width: CELL_H,              // ✅ lås kolumnens bredd = kvadratiska celler
+        width: CELL_H,
         overflow: "hidden",
         borderRadius: 16,
         background: "transparent",
@@ -399,8 +403,8 @@ function Reel({ col, symbols, offset, transitionMs, hl, pulse, preBurstRows, dim
             <div
               key={i}
               style={{
-                width: CELL_H,         // ✅ kvadrat
-                height: CELL_H,        // ✅ kvadrat
+                width: CELL_H,
+                height: CELL_H,
                 boxSizing: "border-box",
                 borderRadius: 14,
                 display: "flex",
@@ -408,7 +412,7 @@ function Reel({ col, symbols, offset, transitionMs, hl, pulse, preBurstRows, dim
                 justifyContent: "center",
                 fontSize: "1.7rem",
                 lineHeight: 1,
-                // ⬇️ Darken the cell rectangles so the PNG behind reads through
+                // Darken the cell rectangles so the PNG behind reads through
                 background: isBonusCell
                   ? "rgba(28,6,6,0.9)"
                   : highlighted
@@ -520,7 +524,6 @@ function scaleTargetInCol(
   }
 }
 
-/** —— BASE helpers: skapa bursts —— */
 type Pos = [number, number];
 function randomWalkCluster(rng: ()=>number, n: number): Pos[] {
   const seen = new Set<string>();
@@ -562,8 +565,8 @@ function enforceOneBonusPerColumn(grid: Sym[][], rng: () => number) {
 
 /** —— App —— */
 export default function App() {
-  const [slowMode, setSlowMode] = useState(false);
-  const speedFactor = slowMode ? 1.8 : 1;
+  const [fastMode, setFastMode] = useState(false);
+  const speedFactor = fastMode ? 0.7 : 1; // 0.7 = faster animations
 
   const [seed, setSeed] = useState<number>(() => {
     try {
@@ -660,9 +663,9 @@ export default function App() {
 
   // BONUS state
   const [bonusActive, setBonusActive] = useState(false);
-  const [bonusSpinsLeft, setBonusSpinsLeft] = useState(0);
+  const [, setBonusSpinsLeft] = useState(0);
   const [bonusSticky, setBonusSticky] = useState<Set<string>>(new Set()); // "r,c"
-  const [bonusTotalWin, setBonusTotalWin] = useState(0);
+  const [, setBonusTotalWin] = useState(0);
   const [bonusTarget, setBonusTarget] = useState<PaySym | null>(null);
   // Track current bonus spin (0 when not running, 1..N during bonus)
   const [bonusSpin, setBonusSpin] = useState(0);
@@ -683,6 +686,8 @@ export default function App() {
   // NEW – dedicated target overlay that can show the PNG sprite
   const [showTargetOverlay, setShowTargetOverlay] = useState(false);
   const [targetOverlaySym, setTargetOverlaySym] = useState<PaySym | null>(null);
+
+  // (we'll reveal `bonusTarget` only after the overlay completes)
 
   const { enabled: soundOn, enable: enableSound, muted, setMuted, click, tickSmall, flipSound, bling } = useAudio();
 
@@ -768,7 +773,7 @@ export default function App() {
   async function spin(forceBurst: boolean = false) {
     if (spinning || balance < bet || bonusActive) return;
     setSpinning(true);
-    // ✅ prevent leftover pulses/flip animations from previous spin
+    // prevent leftover pulses/flip animations from previous spin
     // clear both pulse and flip keys immediately so nothing pops during spin
     setPulseKeys(new Set());
     setFlipKeys(new Set());
@@ -808,7 +813,7 @@ export default function App() {
     // If we will have a burst, dim the slot area while the reels spin
     if (wantBurst) setDimSpin(true);
 
-    // 🔁 start the spin animation NOW (do not await yet)
+  // start the spin animation now (do not await yet)
     const animP = animateToGrid(target, { pool: BASE_STRIP_POOL });
 
     // 🔮 while reels are spinning, pop the ❓ overlay a bit after start
@@ -948,8 +953,9 @@ export default function App() {
   const [overlaySymbol, setOverlaySymbol] = useState<PaySym | null>(null);
 
   async function enterBonusMystery(targetSym: PaySym, fromBuy: boolean) {
-    setBonusActive(true);
-    setBonusTarget(targetSym);
+  setBonusActive(true);
+  // do not set bonusTarget yet — keep sidebar empty while the target overlay spins
+  setBonusTarget(null);
     setBonusSpinsLeft(N_BONUS_SPINS);
     setBonusSticky(new Set());
     setBonusTotalWin(0);
@@ -977,9 +983,12 @@ export default function App() {
     bling();
     await delay(1200);
 
-    // hide overlay
+    // hide overlay first
     setShowTargetOverlay(false);
     setTargetOverlaySym(null);
+
+  // now reveal the chosen target in the sidebar
+    setBonusTarget(targetSym);
 
     let running = 0;
     let sticky = new Set<string>();
@@ -1074,7 +1083,6 @@ export default function App() {
 
   // --- Alltid visa total vinst efter bonus ---
   await showWinScreen(running, "BONUS TOTAL", 0, 1400);
-
   setBonusActive(false);
   setBonusSticky(new Set());
   setBonusSpinsLeft(0);
@@ -1449,6 +1457,9 @@ export default function App() {
   
       <div style={{
         // use the PNG on the panel and clip to rounded corners
+        width: 'min(1200px, 96vw)',
+        minHeight: SLOT_H + 220,
+        margin: '24px auto',
         backgroundImage: 'url("/assets/background.png")',
         backgroundSize: "cover",
         backgroundPosition: "center",
@@ -1459,132 +1470,136 @@ export default function App() {
         borderRadius: 18,
         overflow: "hidden",
         padding: 16,
+        paddingBottom: 22,
         color: "#f6f7f9",
         boxShadow: "0 20px 60px rgba(0,0,0,.45)"
       }}>
-        {/* Header */}
-        <div style={{ display:"flex", justifyContent:"center", alignItems:"center", gap:12, marginBottom: 8 }}>
-          <div style={{ fontSize: 22 }}>🎰</div>
-          <h1 style={{ margin: 0, fontWeight: 800 }}>Crazy Slot — 6×4</h1>
-  
-          {/* Sound toggle */}
-          <button
-            onClick={() => { if (!soundOn) enableSound(); else setMuted(m => !m); }}
+        {/* Header: only the centered logo */}
+        <div style={{ display:"grid", placeItems:"center", marginBottom: 6 }}>
+          <img
+            src="/assets/mmLogo.png"
+            alt="Midnight Munch"
             style={{
-              marginLeft: 12, padding: "6px 10px", borderRadius: 8,
-              border: "1px solid rgba(255,255,255,.12)",
-              background: muted ? "#fde1e1" : "#dff7e6",
-              cursor: "pointer", fontWeight: 700
+              width: 340, maxWidth: "88%", height: "auto",
+              filter: "drop-shadow(0 0 12px rgba(255,0,200,.32)) drop-shadow(0 0 20px rgba(120,0,255,.22))"
             }}
-          >
-            {muted ? "🔇 Muted" : "🔊 Sound ON"}
-          </button>
-  
-          <button
-            onClick={() => setSlowMode(s => !s)}
-            style={{
-              marginLeft: 12, padding: "6px 10px", borderRadius: 8,
-              border: "1px solid rgba(255,255,255,.12)",
-              background: slowMode ? "#ffe0b3" : "#e0e0e0",
-              cursor: "pointer", fontWeight: 700
-            }}
-          >
-            {slowMode ? "🐢 Slow Mode" : "⚡ Normal Speed"}
-          </button>
-
-          {/* ...existing header buttons ... */}
+            draggable={false}
+          />
         </div>
   
-        {/* Reels + STICKY OVERLAY */}
-        <div style={{ position: "relative", margin: "16px 0 18px" }}>
-          <div
-            style={{
-              display:"grid",
-              gridTemplateColumns:`repeat(${COLS}, ${CELL_H}px)`, // ✅ lås kolumnbredd
-              gap: COL_GAP,
-              alignItems: "start",
-              justifyContent: "center", // ✅ centrera griden
-            }}
-          >
-            {Array.from({ length: COLS }, (_, c) => (
-              <Reel
-                key={c}
-                col={c}
-                symbols={reelStrips[c].length ? reelStrips[c] : Array.from({length:ROWS},(_,i)=>displayGrid[i][c])}
-                offset={reelStrips[c].length ? reelOffset[c] : 0}
-                transitionMs={reelStrips[c].length ? reelDur[c] : 0}
-                hl={hl}
-                pulse={spinning ? new Set() : (flipKeys.size ? flipKeys : pulseKeys)}
-                preBurstRows={rowSetForCol(preBurstSet, c)}
-                dim={dimSpin}
-              />
-            ))}
-          </div>
-  
-          {/* Sticky overlay (bonus) */}
-          {bonusActive && bonusSticky.size > 0 && (
+        {/* SLOT AREA (centered) + right sidebar (absolute) */}
+        <div style={{ position: "relative", display: "flex", justifyContent: "center", margin: "16px 0 12px" }}>
+          {/* Centered slot frame with fixed width */}
+          <div style={{ position: "relative", width: SLOT_W }}>
+            {/* The reels grid */}
             <div
               style={{
-                position: "absolute",
-                inset: 0,
-                pointerEvents: "none",
-                display: "grid",
-                gridTemplateColumns: `repeat(${COLS}, ${CELL_H}px)`, // ✅ matcha kolumnbredd
-                gap: `${COL_GAP}px`,
-                justifyContent: "center", // ✅ centrera overlay-griden
+                display:"grid",
+                gridTemplateColumns:`repeat(${COLS}, ${CELL_H}px)`,
+                gap: COL_GAP,
+                alignItems:"start",
+                justifyContent:"center",
+                width: SLOT_W,
+                height: SLOT_H,
               }}
             >
               {Array.from({ length: COLS }, (_, c) => (
-                <div
+                <Reel
                   key={c}
-                  style={{
-                    position:"relative",
-                    width: CELL_H,                                              // ✅ match bredd
-                    height: ROWS*CELL_H + (ROWS-1)*CELL_GAP
-                  }}
-                >
-                  <div style={{
-                    position:"absolute", inset:0,
-                    display:"grid",
-                    gridTemplateRows: `repeat(${ROWS}, ${CELL_H}px)`,
-                    rowGap: `${CELL_GAP}px`,
-                  }}>
-                    {Array.from({ length: ROWS }, (_, r) => {
-                      const k = key(r,c);
-                      const isSticky = bonusSticky.has(k);
-                      if (!isSticky) return <div key={r} />;
-                      const showSym = overlayShowSymbol && overlaySymbol ? overlaySymbol : "❓";
-                      return (
-                        <div key={r} style={{
-                          position:"relative",
-                          display:"flex", alignItems:"center", justifyContent:"center",
-                          width: CELL_H, height: CELL_H,
-                          borderRadius: 14,
-                          // OPAQUE cover so nothing underneath can be seen
-                          background: "#0b0f14",
-                          border: "2px solid rgba(100,160,255,0.85)",
-                          boxShadow: "0 0 0 3px rgba(100,160,255,0.22)",
-                          // make sure overlay is on top of reel cells
-                          zIndex: 5,
-                        }}>
-                          <SymbolSprite sym={showSym as Sym} />
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
+                  col={c}
+                  symbols={reelStrips[c].length ? reelStrips[c] : Array.from({length:ROWS},(_,i)=>displayGrid[i][c])}
+                  offset={reelStrips[c].length ? reelOffset[c] : 0}
+                  transitionMs={reelStrips[c].length ? reelDur[c] : 0}
+                  hl={hl}
+                  pulse={spinning ? new Set() : (flipKeys.size ? flipKeys : pulseKeys)}
+                  preBurstRows={rowSetForCol(preBurstSet, c)}
+                  dim={dimSpin}
+                />
               ))}
             </div>
-          )}
+
+            {/* Sticky overlay (unchanged) */}
+            {bonusActive && bonusSticky.size > 0 && (
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  pointerEvents: "none",
+                  display: "grid",
+                  gridTemplateColumns: `repeat(${COLS}, ${CELL_H}px)`,
+                  gap: `${COL_GAP}px`,
+                  justifyContent: "center",
+                }}
+              >
+                {/* ... your existing overlay cell mapping ... */}
+                {Array.from({ length: COLS }, (_, c) => (
+                  <div key={c} style={{ position: "relative", width: CELL_H, height: ROWS*CELL_H + (ROWS-1)*CELL_GAP }}>
+                    <div style={{ position: "absolute", inset: 0, display: "grid", gridTemplateRows: `repeat(${ROWS}, ${CELL_H}px)`, rowGap: `${CELL_GAP}px` }}>
+                      {Array.from({ length: ROWS }, (_, r) => {
+                        const k = key(r,c);
+                        const isSticky = bonusSticky.has(k);
+                        if (!isSticky) return <div key={r} />;
+                        const showSym = overlayShowSymbol && overlaySymbol ? overlaySymbol : "❓";
+                        return (
+                          <div key={r} style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: CELL_H, height: CELL_H, borderRadius: 14, background: "#0b0f14", border: "2px solid rgba(100,160,255,0.85)", boxShadow: "0 0 0 3px rgba(100,160,255,0.22)", zIndex: 5 }}>
+                            <SymbolSprite sym={showSym as Sym} />
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* RIGHT SIDEBAR — panel bredvid slotten */}
+          <div
+            style={{
+              position: "absolute",
+              left: `calc(50% + ${SLOT_W / 2}px + 16px)`,
+              top: 0,
+            }}
+          >
+            <div style={{ width: 210, ...sidePanelBox }}>
+              <button onClick={openBuy} disabled={spinning || bonusActive} style={neonBtn}>
+                BONUS
+              </button>
+
+              <button
+                onClick={() => spin(true)}
+                disabled={spinning || bonusActive || forceBurstOnce}
+                style={neonBtnBlue}
+                title="Force a mystery burst this base spin"
+              >
+                Mystery Spin
+              </button>
+
+              {/* Target visas bara när bonus är aktiv OCH target är bestämd och overlay inte visas */}
+              {bonusActive && bonusTarget && !showTargetOverlay && (
+                <div style={targetPanelStyle}>
+                  <div style={{ fontWeight: 800, marginBottom: 8 }}>Target</div>
+                  <div style={targetBoxStyle}>
+                    <SymbolSprite sym={bonusTarget} size={40} />
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
-        {/* per-reel dimming and pre-burst overlays are rendered inside each Reel now */}
-  
-        {/* Bottom bar */}
+  {/* Controls under the slot removed — using bottom bar center cluster instead */}
+
+  {/* per-reel dimming and pre-burst overlays are rendered inside each Reel now */}
+
+  {/* Space mellan slot & bottenbar */}
+  <div style={{ height: 18 }} />
+
+  {/* Bottom bar */}
         <div style={{
           display:"grid", gridTemplateColumns:"1fr auto 1fr", alignItems:"center",
           gap: 16, background:"#0e1113", border:"1px solid rgba(255,255,255,.06)",
-          borderRadius: 14, padding:"10px 14px"
+          borderRadius: 14, padding:"10px 14px", marginTop: 18
         }}>
           {/* Bet */}
           <div style={{ display:"inline-flex", alignItems:"center", gap:10 }}>
@@ -1595,84 +1610,45 @@ export default function App() {
               style={pillStyle}>+</button>
           </div>
   
-          {/* Spin / Buy */}
-          <div style={{ display:"flex", gap:10, justifyContent:"center" }}>
+          {/* CENTER: Sound — Spin — Speed */}
+          <div style={{ display:"flex", gap:12, alignItems:"center", justifyContent:"center" }}>
+            {/* Sound: grön när på, röd när muted */}
+            <button
+              onClick={() => { if (!soundOn) enableSound(); else setMuted(m => !m); }}
+              style={muted ? neonBtnRed : neonBtnGreen}
+              title="Toggle sound"
+            >
+              Sound
+            </button>
+
+            {/* SPIN (centrerad) */}
             <button
               onClick={() => spin()}
               disabled={spinning || bonusActive || balance < bet}
               style={{
-                padding:"12px 22px", borderRadius:999,
-                border:"1px solid rgba(255,255,255,.12)",
-                fontWeight:800, background:"#e7f0ff", color:"#111",
-                minWidth:140, boxShadow:"0 6px 18px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.7)",
-                cursor: (!spinning && !bonusActive && balance >= bet) ? "pointer" : "not-allowed",
+                ...neonBtn,
+                minWidth: 180,
                 opacity: (!spinning && !bonusActive && balance >= bet) ? 1 : 0.6
               }}
             >
               {spinning ? "SPIN..." : "SPIN"}
             </button>
-  
+
+            {/* Speed (Speed / Speed +) */}
             <button
-              onClick={openBuy}
-              disabled={spinning || bonusActive}
-              style={{
-                padding:"12px 18px", borderRadius:12,
-                border:"1px solid rgba(255,255,255,.12)",
-                fontWeight:800, background:"#ffe9b5", color:"#111",
-                minWidth:140,
-                cursor: (!spinning && !bonusActive) ? "pointer" : "not-allowed",
-                opacity: (!spinning && !bonusActive) ? 1 : 0.6
-              }}
-              title="Buy Mystery Sticky Bonus — 100× bet"
+              onClick={() => setFastMode(v => !v)}
+              style={neonBtnBlue}
+              title="Toggle spin animation speed"
             >
-              BUY BONUS 100×
-            </button>
-            
-            <button
-              onClick={() => spin(true)}
-              disabled={spinning || bonusActive || forceBurstOnce}
-              style={{
-                padding:"12px 14px", borderRadius:12,
-                border:"1px solid rgba(255,255,255,.12)",
-                fontWeight:800, background:"#cde7ff", color:"#111",
-                minWidth:150,
-                cursor: (!spinning && !bonusActive && !forceBurstOnce) ? "pointer" : "not-allowed",
-                opacity: (!spinning && !bonusActive && !forceBurstOnce) ? 1 : 0.6
-              }}
-              title="Force exactly one mystery burst on the next base spin"
-            >
-              🔮 MYSTERY BURST (once)
+              {fastMode ? "Speed +" : "Speed"}
             </button>
           </div>
   
           {/* Stats */}
           <div style={{ display:"flex", justifyContent:"flex-end", gap:18 }}>
             {bonusActive && (
-              <div style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
-                <b>Bonus:</b> {bonusSpinsLeft} kvar •
-                <div style={{
-                  color: "#9ef7ff",
-                  fontWeight: 800,
-                  letterSpacing: 0.5,
-                  textShadow: "0 0 10px rgba(120,200,255,0.4)"
-                }}>{`Spins: ${bonusSpin}/${N_BONUS_SPINS}`}</div>
-                {bonusTarget && (
-                  <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-                    Target:
-                    <span
-                      style={{
-                        width: 26,
-                        height: 26,
-                        display: "inline-flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <SymbolSprite sym={bonusTarget} size={26} />
-                    </span>
-                  </span>
-                )}
-                • {format(bonusTotalWin)}
+              <div style={{ color: "#9ef7ff", fontWeight: 800, letterSpacing: .5, textShadow: "0 0 10px rgba(120,200,255,.4)" }}>
+                {`Spins: ${bonusSpin}/${N_BONUS_SPINS}`}
               </div>
             )}
             <div><b>Vinst:</b> {format(lastWin)}</div>
@@ -1688,43 +1664,32 @@ export default function App() {
       {/* Buy modal */}
       {buyOpen && (
         <div style={{
-          position:"fixed", inset:0, background:"rgba(0,0,0,.55)",
-          display:"grid", placeItems:"center", zIndex:1000
+          position:"fixed", inset:0, background:"rgba(6,8,12,.55)",
+          backdropFilter:"blur(2px)", display:"grid", placeItems:"center", zIndex:1000
         }}>
-          <div style={{
-            width: 420, background:"#15181c", color:"#f6f7f9",
-            border:"1px solid rgba(255,255,255,.12)", borderRadius:16, padding:18,
-            boxShadow:"0 20px 70px rgba(0,0,0,.55)"
-          }}>
-            <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-              <h3 style={{ margin:0, fontSize:20, fontWeight:800 }}>Buy Bonus</h3>
-              <button onClick={()=>setBuyOpen(false)} style={{ background:"transparent", border:"none", color:"#aaa", fontSize:22, cursor:"pointer" }}>×</button>
-            </div>
-  
-            <div style={{ marginTop:12, fontSize:14, opacity:.9 }}>
-              Mystery Sticky — {N_BONUS_SPINS} free spins. 🎯 När target landar: symbolen syns först, sen läggs en ❓ ovanpå och blir sticky. Efter varje spin avslöjar alla ❓ en gemensam slumpad symbol.
-            </div>
-  
-            <div style={{ marginTop:16, display:"flex", alignItems:"center", gap:10, justifyContent:"center" }}>
+          <div style={neonPanel}>
+            <div style={neonTitle}>BUY BONUS</div>
+
+            {/* Bet-stegrare */}
+            <div style={{ marginTop:14, display:"flex", alignItems:"center", gap:10, justifyContent:"center" }}>
               <button onClick={decBuy} style={pillStyle}>−</button>
               <div style={betValueStyle}>{format(buyBet)}</div>
               <button onClick={incBuy} style={pillStyle}>+</button>
             </div>
-  
-            <div style={{ marginTop:12, textAlign:"center", fontWeight:700 }}>
-              Cost: 100 × {format(buyBet)} = {format(100*buyBet)}
+
+            {/* Endast slutpriset */}
+            <div style={{ marginTop:12, textAlign:"center", fontWeight:800, color:"#fff8e6",
+              textShadow:"0 0 10px rgba(255,220,160,.45)" }}>
+              Cost: {format(100 * buyBet)}
             </div>
-  
+
+            {/* Knappar */}
             <div style={{ marginTop:16, display:"flex", gap:10, justifyContent:"center" }}>
-              <button onClick={()=>setBuyOpen(false)} style={{
-                padding:"10px 14px", borderRadius:10, border:"1px solid rgba(255,255,255,.12)",
-                background:"#242a30", color:"#f6f7f9", cursor:"pointer"
-              }}>Cancel</button>
-              <button onClick={confirmBuy} disabled={balance < 100*buyBet} style={{
-                padding:"10px 18px", borderRadius:10, border:"1px solid rgba(255,255,255,.12)",
-                background: balance >= 100*buyBet ? "#ffe9b5" : "#b9b19a",
-                color:"#111", fontWeight:800, cursor: balance >= 100*buyBet ? "pointer" : "not-allowed"
-              }}>BUY</button>
+              <button onClick={()=>setBuyOpen(false)} style={neonBtnBlue}>Cancel</button>
+              <button onClick={confirmBuy} disabled={balance < 100*buyBet}
+                style={{ ...(balance >= 100*buyBet ? neonBtnGold : {...neonBtnGold, opacity:.6, cursor:"not-allowed"}) }}>
+                BUY
+              </button>
             </div>
           </div>
         </div>
@@ -1829,39 +1794,51 @@ export default function App() {
             zIndex: 2000,
           }}
         >
+          {/* 🔧 Ny wrapper som matchar slot-bredden */}
           <div
             style={{
-              padding: 16,
-              borderRadius: 14,
-              background: "#111",
-              color: "#fff",
-              border: "1px solid rgba(255,255,255,.15)",
+              width: SLOT_W,
+              maxWidth: "calc(96vw - 64px)",
               display: "grid",
-              gap: 10,
-              justifyItems: "center",
+              placeItems: "center",
             }}
           >
-            <div style={{ fontWeight: 800, fontSize: 20 }}>Target</div>
-
             <div
               style={{
-                width: 110,
-                height: 110,
+                position: "relative",
+                transform: "translate(18px, -5%)",
+                padding: 16,
+                borderRadius: 14,
+                background: "#111",
+                color: "#fff",
+                border: "1px solid rgba(255,255,255,.15)",
                 display: "grid",
-                placeItems: "center",
-                background: "#0b0f14",
-                border: "2px solid rgba(100,160,255,0.85)",
-                borderRadius: 16,
-                boxShadow: "0 0 0 4px rgba(100,160,255,0.18)",
+                gap: 10,
+                justifyItems: "center",
               }}
             >
-              {targetOverlaySym && <SymbolSprite sym={targetOverlaySym} size={72} />}
+              <div style={{ fontWeight: 800, fontSize: 20 }}>Target</div>
+
+              <div
+                style={{
+                  width: 110,
+                  height: 110,
+                  display: "grid",
+                  placeItems: "center",
+                  background: "#0b0f14",
+                  border: "2px solid rgba(100,160,255,0.85)",
+                  borderRadius: 16,
+                  boxShadow: "0 0 0 4px rgba(100,160,255,0.18)",
+                }}
+              >
+                {targetOverlaySym && <SymbolSprite sym={targetOverlaySym} size={72} />}
+              </div>
             </div>
           </div>
         </div>
       )}
-      </div>
     </div>
+  </div>
   );
 }
 
@@ -1877,6 +1854,116 @@ const pillStyle: React.CSSProperties = {
   cursor: "pointer",
   fontSize: 18, fontWeight: 800,
   userSelect: "none"
+};
+
+const neonBtn: React.CSSProperties = {
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
+  minWidth: 140,
+  height: 46,
+  padding: "8px 16px",
+  borderRadius: 999,
+  border: "1px solid rgba(255,255,255,.16)",
+  background: "rgba(255, 0, 140, 0.12)",
+  color: "#ffe6ff",
+  fontWeight: 800,
+  letterSpacing: .4,
+  textShadow: "0 0 8px rgba(255,0,180,.85), 0 0 18px rgba(120,0,255,.55)",
+  boxShadow:
+    "0 10px 28px rgba(0,0,0,.45), inset 0 0 14px rgba(255,0,180,.25), 0 0 12px rgba(120,0,255,.35)",
+  cursor: "pointer",
+  userSelect: "none",
+};
+
+const neonBtnBlue: React.CSSProperties = {
+  ...neonBtn,
+  background: "rgba(0, 150, 255, 0.12)",
+  color: "#e8f3ff",
+  textShadow: "0 0 8px rgba(0,160,255,.9), 0 0 18px rgba(120,0,255,.45)",
+  boxShadow:
+    "0 10px 28px rgba(0,0,0,.45), inset 0 0 14px rgba(0,160,255,.25), 0 0 12px rgba(120,0,255,.35)",
+};
+
+const neonBtnGreen: React.CSSProperties = {
+  ...neonBtn,
+  background: "rgba(0, 255, 170, 0.12)",
+  color: "#eaffe9",
+  textShadow: "0 0 8px rgba(0,255,170,.9), 0 0 18px rgba(120,0,255,.45)",
+  boxShadow:
+    "0 10px 28px rgba(0,0,0,.45), inset 0 0 14px rgba(0,255,170,.25), 0 0 12px rgba(120,0,255,.35)",
+};
+
+const neonBtnRed: React.CSSProperties = {
+  ...neonBtn,
+  minWidth: 120,
+  background: "rgba(255,30,80,.12)",
+  color: "#ffe9ef",
+  textShadow: "0 0 8px rgba(255,60,120,.95), 0 0 18px rgba(255,120,200,.45)",
+  boxShadow:
+    "0 10px 28px rgba(0,0,0,.45), inset 0 0 14px rgba(255,40,100,.25), 0 0 12px rgba(255,120,200,.30)",
+};
+
+
+const sidePanelBox: React.CSSProperties = {
+  padding: 12,
+  borderRadius: 18,
+  backdropFilter: "blur(3px)",
+  background:
+    "linear-gradient(180deg, rgba(10,12,20,.55), rgba(8,10,16,.42))",
+  boxShadow:
+    "0 8px 28px rgba(0,0,0,.45), 0 0 28px rgba(120,0,255,.18)",
+  border: "1px solid rgba(255,255,255,.08)",
+  display: "grid",
+  gap: 10,
+};
+
+const targetPanelStyle: React.CSSProperties = {
+  padding: 12,
+  borderRadius: 14,
+  background: 'radial-gradient(120% 120% at 50% -20%, rgba(255,0,100,.20), rgba(15,16,24,.75) 60%)',
+  border: '1px solid rgba(255,0,120,.28)',
+  boxShadow: '0 0 24px rgba(255,0,140,.25), inset 0 0 10px rgba(255,0,120,.15)',
+  color: '#ffe6f3'
+};
+
+const targetBoxStyle: React.CSSProperties = {
+  width: 64, height: 64,
+  display: 'grid', placeItems: 'center',
+  borderRadius: 12,
+  background: 'rgba(15,16,24,.9)',
+  border: '2px solid rgba(255,80,160,.85)',
+  boxShadow: '0 0 0 4px rgba(255,80,160,.18)'
+};
+
+const neonPanel: React.CSSProperties = {
+  width: 420,
+  borderRadius: 16,
+  padding: 18,
+  background: "linear-gradient(180deg, rgba(15,16,28,.92), rgba(10,12,20,.92))",
+  boxShadow: "0 0 38px rgba(255, 60, 180, .22), 0 0 60px rgba(70, 180, 255, .16)",
+  color: "#e9f4ff",
+  border: "none",
+  textAlign: "center"
+};
+
+const neonTitle: React.CSSProperties = {
+  fontWeight: 900,
+  letterSpacing: 1,
+  fontSize: 18,
+  background: "linear-gradient(90deg,#b25cff,#ff5fb7,#5ce1ff)",
+  WebkitBackgroundClip: "text",
+  backgroundClip: "text",
+  color: "transparent",
+  textShadow: "0 0 10px rgba(178,92,255,.35)"
+};
+
+const neonBtnGold: React.CSSProperties = {
+  ...neonBtn,
+  background: "rgba(255,190,0,.14)",
+  color: "#fff7da",
+  textShadow: "0 0 8px rgba(255,210,120,.9), 0 0 18px rgba(255,120,200,.35)",
+  boxShadow: "0 10px 28px rgba(0,0,0,.45), inset 0 0 14px rgba(255,170,0,.28), 0 0 12px rgba(255,120,200,.28)"
 };
 
 const betValueStyle: React.CSSProperties = {
